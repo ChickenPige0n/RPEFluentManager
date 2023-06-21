@@ -38,8 +38,8 @@ namespace RPEFluentManager.ViewModels
             {
                 new NavigationItem()
                 {
-                    Content = "DashBoard",
-                    PageTag = "dashboard",
+                    Content = "ChartList",
+                    PageTag = "chartlist",
                     Icon = SymbolRegular.Home24,
                     PageType = typeof(Views.Pages.DashboardPage)
                 }

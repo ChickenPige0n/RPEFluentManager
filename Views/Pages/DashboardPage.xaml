@@ -22,9 +22,18 @@
 
         <ui:DynamicScrollViewer x:Name="DynScr" Grid.Column="0">
             <ListBox x:Name="ChartListBox" PreviewMouseWheel="ListBox_PreviewMouseWheel" ItemsSource="{Binding ViewModel.ChartList}" Width="600">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="LightBlue"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <DockPanel LastChildFill="False" Width="550">
+                        <DockPanel LastChildFill="False" Width="580">
                             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                                 
                                 <Image VerticalAlignment="Center" Margin="10" Width="100" Height="100" Stretch="Uniform" Source="{Binding ImageSource}">
@@ -38,12 +47,12 @@
                                 </DockPanel>
                             </StackPanel>
 
-                            <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Width="80">
-                                <Button Margin="10" >删除</Button>
-                                <Button Margin="10" >编辑</Button>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Vertical" VerticalAlignment="Center" Width="100">
+                                <ui:Button Icon="Delete12" Margin="10" >删除</ui:Button>
+                                <ui:Button Icon="Edit16" Margin="10" >编辑</ui:Button>
                             </StackPanel>
 
-                            <CheckBox DockPanel.Dock="Right" IsChecked="{Binding IsSelected}"></CheckBox>
+                            <CheckBox DockPanel.Dock="Right" HorizontalAlignment="Center" IsChecked="{Binding IsSelected}"></CheckBox>
                         </DockPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
