@@ -1,0 +1,64 @@
+﻿<ui:UiPage
+    x:Class="RPEFluentManager.Views.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:RPEFluentManager.Helpers"
+    xmlns:local="clr-namespace:RPEFluentManager.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="SettingsPage"
+    d:DataContext="{d:DesignInstance local:SettingsPage,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    d:Background="{DynamicResource ApplicationBackgroundBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+    <ui:UiPage.Resources>
+        <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+    </ui:UiPage.Resources>
+
+    <StackPanel>
+        <TextBlock
+            FontSize="20"
+            FontWeight="Medium"
+            Text="Personalization" />
+        <TextBlock Margin="0,12,0,0" Text="Theme" />
+        <RadioButton
+            Margin="0,12,0,0"
+            Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
+            CommandParameter="theme_light"
+            Content="Light"
+            GroupName="themeSelect"
+            IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}" />
+        <RadioButton
+            Margin="0,8,0,0"
+            Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
+            CommandParameter="theme_dark"
+            Content="Dark"
+            GroupName="themeSelect"
+            IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}" />
+
+        <TextBlock Margin="0,12,0,0" Text="Resources文件夹目录:" />
+        <StackPanel Orientation="Horizontal" 
+                    Margin="0,8,0,0" >
+
+            <ui:TextBox Width="300" 
+                    Text="{Binding ViewModel.PathSetting}"  
+                    PlaceholderText="F:\Program Files (x86)\RPEv1.2\Resources" 
+                    HorizontalAlignment="Left"/>
+        </StackPanel>
+        <ui:Button Content="保存配置" Icon="Save24" Command="{Binding ViewModel.SaveSettingsCommand, Mode=OneWay}" Margin="0,10,0,0"></ui:Button>
+        
+        
+
+        <TextBlock
+            Margin="0,24,0,0"
+            FontSize="20"
+            FontWeight="Medium"
+            Text="About RPEFluentManager" />
+        <TextBlock Margin="0,12,0,0" Text="{Binding ViewModel.AppVersion, Mode=OneWay}" />
+
+    </StackPanel>
+</ui:UiPage>
