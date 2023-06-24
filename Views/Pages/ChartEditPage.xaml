@@ -28,9 +28,9 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <ui:Button Icon="Add16" Margin="10">生成info.csv</ui:Button>
+                <ui:Button Icon="Add16" Margin="10" Command="{Binding ViewModel.GenInfoCsvCommand}">生成info.csv</ui:Button>
                 <TextBlock VerticalAlignment="Center">曲绘作者：</TextBlock>
-                <ui:TextBox Width="200"></ui:TextBox>
+                <ui:TextBox Width="200" Text="{Binding ViewModel.ChartData.Illustrator}"/>
             </StackPanel>
 
             <ui:Button Icon="Merge16" Margin="10">合并多层事件</ui:Button>
@@ -51,7 +51,7 @@
             </StackPanel>
 
             <TextBlock Margin="10">短时父子线编辑</TextBlock>
-            <Border BorderBrush="Wheat" BorderThickness="1" CornerRadius="10" Width="400" Height="150" HorizontalAlignment="Left">
+            <Border BorderBrush="Wheat" BorderThickness="1" CornerRadius="10" Width="400" Height="130" HorizontalAlignment="Left">
                 
                 <StackPanel Orientation="Horizontal" Margin="10">
                     

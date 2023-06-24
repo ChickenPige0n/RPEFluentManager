@@ -87,6 +87,22 @@ namespace RPEFluentManager.ViewModels
                                 cd.ChartDiff = infos[1].Trim();
                                 break;
 
+                            case "Song":
+                                cd.MusicFileName = infos[1].Trim();
+                                break;
+
+                            case "Chart":
+                                cd.ChartFileName = infos[1].Trim();
+                                break;
+
+                            case "Composer":
+                                cd.Composer = infos[1].Trim();
+                                break;
+
+                            case "Charter":
+                                cd.Charter = infos[1].Trim();
+                                break;
+
                             default:
                                 break;
                         }
@@ -100,11 +116,18 @@ namespace RPEFluentManager.ViewModels
 
         public partial class ChartData : ObservableObject
         {
-            public string? ImageSource { get; set; }
+            public string ImageSource { get; set; }
+            public string MusicFileName { get; set; }
+            public string ChartFileName { get; set; }
             
-            public string? ChartName { get; set; }
-            public string? ChartDiff { get; set; }
-            public string? ChartPath { get; set; }
+            public string ChartName { get; set; }
+            public string ChartDiff { get; set; }
+            public string ChartPath { get; set; }
+
+            public string Composer { get; set; }
+            public string Charter { get; set; }
+
+            public string Illustrator { get; set; }
 
             [ObservableProperty]
             public bool _isSelected;
@@ -131,7 +154,18 @@ namespace RPEFluentManager.ViewModels
             }
 
             public ChartData()
-            { 
+            {
+
+                ImageSource   = string.Empty;
+                MusicFileName = string.Empty;
+                ChartFileName = string.Empty;
+                ChartName     = string.Empty;
+                ChartDiff     = string.Empty;
+                ChartPath     = string.Empty;
+                Composer      = string.Empty;
+                Charter       = string.Empty;
+                Illustrator   = string.Empty;
+
                 IsSelected = false;
             }
         }
