@@ -28,8 +28,8 @@ namespace RPEFluentManager.ViewModels
         {
             if (!_isInitialized)
                 InitializeViewModel();
-        }
-
+        }       
+        
         private void InitializeViewModel()
         {
             ApplicationTitle = "RPEFluentManager";
@@ -42,6 +42,13 @@ namespace RPEFluentManager.ViewModels
                     PageTag = "chartlist",
                     Icon = SymbolRegular.Home24,
                     PageType = typeof(Views.Pages.DashboardPage)
+                },
+                new NavigationItem()
+                {
+                    Content = $"ChartEdit",
+                    PageTag = "chartedit",
+                    Icon = SymbolRegular.Edit24,
+                    PageType = typeof(Views.Pages.ChartEditPage)
                 }
             };
 

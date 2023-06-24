@@ -14,7 +14,7 @@
     mc:Ignorable="d">
 
 
-    <Grid VerticalAlignment="Top">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="200" />
@@ -49,7 +49,7 @@
 
                             <StackPanel DockPanel.Dock="Right" Orientation="Vertical" VerticalAlignment="Center" Width="100">
                                 <ui:Button Icon="Delete12" Margin="10" >删除</ui:Button>
-                                <ui:Button Icon="Edit16" Margin="10" >编辑</ui:Button>
+                                <ui:Button Icon="Edit16" Margin="10" Command="{Binding EditChartCommand}" >编辑</ui:Button>
                             </StackPanel>
 
                             <CheckBox DockPanel.Dock="Right" HorizontalAlignment="Center" IsChecked="{Binding IsSelected}"></CheckBox>
@@ -63,6 +63,7 @@
             <TextBlock FontSize="20" HorizontalAlignment="Center" DockPanel.Dock="Top">批量操作</TextBlock>
 
             <Button Margin="10" Foreground="LightBlue" HorizontalAlignment="Center" DockPanel.Dock="Top" Command="{Binding ViewModel.DelAutoSaveCommand}">删除Autosave</Button>
+            <Button Margin="10" Foreground="LightBlue" HorizontalAlignment="Center" DockPanel.Dock="Top" Command="{Binding ViewModel.FixChartListCommand}">修复ChartList.txt</Button>
 
 
             <Button Margin="10" HorizontalAlignment="Center" DockPanel.Dock="Bottom" Command="{Binding ViewModel.SelectAllCommand}">全选/取消</Button>

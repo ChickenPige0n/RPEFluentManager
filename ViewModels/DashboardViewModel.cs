@@ -9,6 +9,11 @@ using System.Windows.Media;
 using System.Windows;
 using Wpf.Ui.Common.Interfaces;
 using System.Xml;
+using Wpf.Ui.Common;
+using Wpf.Ui.Controls;
+using RPEFluentManager.Views.Windows;
+using System.Linq;
+using RPEFluentManager.Views.Pages;
 
 namespace RPEFluentManager.ViewModels
 {
@@ -104,11 +109,33 @@ namespace RPEFluentManager.ViewModels
             [ObservableProperty]
             public bool _isSelected;
 
+            [RelayCommand]
+            public void EditChart(string p)
+            {
+                // 查找 MainWindow 实例
+                var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+
+                // 获取 MainWindow 的 DataContext (即 MainViewModel)
+                var viewModel = mainWindow?.ViewModel;
+
+                mainWindow?.RootNavigation.Navigate("chartedit");
+                mainWindow?.RootNavigation.PageService?.GetPage<ChartEditPage>()?.ViewModel.SetData(this);
+
+
+            }
+
+            [RelayCommand]
+            public void FixChartList(string p)
+            {
+
+            }
+
             public ChartData()
             { 
                 IsSelected = false;
             }
         }
+
 
         [RelayCommand]
         public void DelAutoSave(string p)
@@ -175,12 +202,13 @@ namespace RPEFluentManager.ViewModels
         {
             Wpf.Ui.Controls.MessageBox msgbx = new Wpf.Ui.Controls.MessageBox();
             msgbx.Foreground = Brushes.Black;
-            msgbx.Width = 200;
+            msgbx.Width = 250;
             msgbx.Height = 146;
             msgbx.ButtonLeftClick += (sender, e) => { msgbx.Close(); };
             msgbx.ButtonLeftName = "好的";
             msgbx.ButtonRightClick += (sender, e) => { msgbx.Close(); };
             msgbx.ButtonRightName = "取消";
+            msgbx.Foreground = Brushes.White;
             msgbx.Show(title, content);
         }
 
@@ -199,6 +227,8 @@ namespace RPEFluentManager.ViewModels
                 selectionFlag = !selectionFlag;
             }
         }
+
+        
 
     }
 }

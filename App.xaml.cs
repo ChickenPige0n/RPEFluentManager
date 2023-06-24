@@ -49,6 +49,9 @@ namespace RPEFluentManager
                 // Views and ViewModels
                 services.AddScoped<Views.Pages.DashboardPage>();
                 services.AddScoped<ViewModels.DashboardViewModel>();
+                services.AddScoped<Views.Pages.ChartEditPage>();
+                services.AddScoped<ViewModels.ChartEditViewModel>();
+
                 services.AddScoped<Views.Pages.SettingsPage>();
                 services.AddScoped<ViewModels.SettingsViewModel>();
 
