@@ -14,6 +14,9 @@ using Wpf.Ui.Controls;
 using RPEFluentManager.Views.Windows;
 using System.Linq;
 using RPEFluentManager.Views.Pages;
+using Microsoft.Win32;
+using System.Text;
+using System.Reflection.Metadata;
 
 namespace RPEFluentManager.ViewModels
 {
@@ -37,14 +40,6 @@ namespace RPEFluentManager.ViewModels
         {
             ChartList = new ObservableCollection<ChartData>();
             ResourcePath = SettingsHandler.GetSettings().ResourcePath;
-
-            try
-            {
-                string[] folderPath111 = Directory.GetDirectories(ResourcePath, "*", SearchOption.AllDirectories);
-            }catch (Exception ex)
-            {
-                return;
-            }
 
             string[] folderPaths = Directory.GetDirectories(ResourcePath, "*", SearchOption.AllDirectories);
 
@@ -147,12 +142,6 @@ namespace RPEFluentManager.ViewModels
 
             }
 
-            [RelayCommand]
-            public void FixChartList(string p)
-            {
-
-            }
-
             public ChartData()
             {
 
@@ -168,6 +157,50 @@ namespace RPEFluentManager.ViewModels
 
                 IsSelected = false;
             }
+        }
+
+
+        [RelayCommand]
+        public void FixChartList(string p)
+        {
+            if (ChartList != null)
+            {
+                StringBuilder allInfo = new StringBuilder();
+                foreach (ChartData cd in ChartList)
+                {
+                    string infoPath = Path.Combine(ResourcePath, cd.ChartPath, "info.txt");
+                    allInfo.Append(File.ReadAllText(infoPath));
+                }
+                string chartListPath = Path.Combine(Path.GetDirectoryName(ResourcePath), "Chartlist.txt");
+                if (File.Exists(chartListPath))
+                {
+                    Wpf.Ui.Controls.MessageBox msgbx = new Wpf.Ui.Controls.MessageBox();
+                    msgbx.Foreground = Brushes.Black;
+                    msgbx.Width = 250;
+                    msgbx.Height = 146;
+
+                    msgbx.ButtonLeftClick += (sender, e) => 
+                    {
+                        File.WriteAllText(chartListPath, allInfo.ToString());
+                        msgbx.Close();
+                    };
+                    msgbx.ButtonLeftName = "确定";
+
+                    msgbx.ButtonRightClick += (sender, e) => 
+                    {
+                        msgbx.Close();
+                    };
+                    msgbx.ButtonRightName = "取消";
+
+                    msgbx.Foreground = Brushes.White;
+                    msgbx.Show("警告", "发现已存在Chartlist.txt,确定覆盖吗？");
+                    return;
+                }
+                File.WriteAllText(chartListPath, allInfo.ToString());
+
+                makeMessageBox("成功", "已还原ChartList.txt");
+            }
+
         }
 
 
@@ -232,7 +265,7 @@ namespace RPEFluentManager.ViewModels
         }
 
 
-        private void makeMessageBox(string title, string content)
+        public static void makeMessageBox(string title, string content)
         {
             Wpf.Ui.Controls.MessageBox msgbx = new Wpf.Ui.Controls.MessageBox();
             msgbx.Foreground = Brushes.Black;
