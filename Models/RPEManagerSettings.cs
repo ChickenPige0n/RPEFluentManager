@@ -6,6 +6,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using Microsoft.Win32;
+using System.Windows;
 
 namespace RPEFluentManager.Models
 {
@@ -23,14 +25,20 @@ namespace RPEFluentManager.Models
 
         public static RPEManagerSettings GetSettings()
         {
-            // 检测设置文件是否存在
             if (!File.Exists(settingsPath))
             {
-                // 创建新的设置文件，并写入初始设置
-                var initialSettings = new RPEManagerSettings(); // 自定义设置对象
-                initialSettings.ResourcePath = "F:\\Program Files (x86)\\RPEv1.2\\Resources";
-                string json = JsonSerializer.Serialize(initialSettings);
-                File.WriteAllText(settingsPath, json);
+
+                OpenFileDialog openFileDialog = new OpenFileDialog() { FileName = "PhiEdit.exe", Title = "第一次打开时请先选择要管理的RPE可执行文件" };
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    var initialSettings = new RPEManagerSettings() { ResourcePath = Path.Combine(Path.GetDirectoryName(openFileDialog.FileName), "Resources") };
+                    string json = JsonSerializer.Serialize(initialSettings);
+                    File.WriteAllText(settingsPath, json);
+                }
+                else
+                {
+                    Application.Current.Shutdown();
+                }
             }
             return JsonSerializer.Deserialize<RPEManagerSettings>(File.ReadAllText(settingsPath));
         }
