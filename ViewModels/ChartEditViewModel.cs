@@ -68,32 +68,31 @@ namespace RPEFluentManager.ViewModels
 
                 string absChartPath = Path.Combine(resPath, ChartData.ChartPath);
 
-                RPEChart? chart = JsonConvert.DeserializeObject<RPEChart>(File.ReadAllText(Path.Combine(absChartPath,ChartData.ChartFileName)));
-                if (chart == null) return;
-
                 List<string> absFilePaths = new List<string> { };
 
-                foreach(JudgeLineListItem line in chart.judgeLineList)
+                if (File.Exists(Path.Combine(absChartPath, "info.csv"))) absFilePaths.Add(Path.Combine(absChartPath, "info.csv"));
+                absFilePaths.Add(ChartData.ImageSource);
+                absFilePaths.Add(Path.Combine(absChartPath, ChartData.ChartFileName));
+                absFilePaths.Add(Path.Combine(absChartPath, ChartData.MusicFileName));
+                absFilePaths.Add(Path.Combine(absChartPath, "info.txt"));
+
+                RPEChart? chart = JsonConvert.DeserializeObject<RPEChart>(File.ReadAllText(Path.Combine(absChartPath, ChartData.ChartFileName)));
+                if (chart == null) return;
+
+                foreach (JudgeLineListItem line in chart.judgeLineList)
                 {
                     if (line.Texture.Trim() == "line.png") continue;
 
                     absFilePaths.Add(Path.Combine(absChartPath,line.Texture));
                 }
+
                 var pezPath = Path.Combine(resPath, $"{ChartData.ChartPath}.pez");
 
 
-                if (File.Exists(pezPath))
-                {
-                    File.Delete(pezPath);
-                }
+                if (File.Exists(pezPath)) File.Delete(pezPath);
 
                 using (var archive = ZipFile.Open(pezPath, ZipArchiveMode.Create))
                 {
-                    absFilePaths.Add(ChartData.ImageSource);
-                    absFilePaths.Add(Path.Combine(absChartPath, ChartData.ChartFileName));
-                    absFilePaths.Add(Path.Combine(absChartPath, ChartData.MusicFileName));
-                    absFilePaths.Add(Path.Combine(absChartPath, "info.txt"));
-
                     foreach (string absFilePath in absFilePaths)
                     {
                         archive.CreateEntryFromFile(absFilePath, Path.GetFileName(absFilePath));
