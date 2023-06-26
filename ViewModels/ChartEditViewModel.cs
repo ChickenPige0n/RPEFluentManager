@@ -96,6 +96,7 @@ namespace RPEFluentManager.ViewModels
                 {
                     foreach (string absFilePath in absFilePaths)
                     {
+                        absFilePath = absFilePath.Trim();
                         archive.CreateEntryFromFile(absFilePath, Path.GetFileName(absFilePath));
                     }
                 }
