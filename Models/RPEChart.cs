@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 //generated automatically
 
-namespace EventFitter
+namespace RPEFluentManager.Models
 {
 
     public class BPMListItem
@@ -46,6 +46,8 @@ namespace EventFitter
             linkgroup = 0;
             easingLeft = 0;
             easingRight = 1;
+            bezier = 0;
+            bezierPoints = new BezierPoints() { 0.0f, 0.0f, 0.0f, 0.0f };
         }
 
 
@@ -70,6 +72,8 @@ namespace EventFitter
             return (end-start)/getDuration();
         }
 
+        public int bezier { get; set; }
+        public BezierPoints bezierPoints { get; set; }
         public float easingLeft { get; set; }
         public float easingRight { get; set; }
         public int easingType { get; set; }
@@ -78,6 +82,11 @@ namespace EventFitter
         public int linkgroup { get; set; }
         public float start { get; set; }
         public Time startTime { get; set; }
+    }
+    //Cubic Bezier
+    public class BezierPoints : List<float>
+    {
+
     }
 
     public class Time : List<int>
