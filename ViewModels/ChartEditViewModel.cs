@@ -70,7 +70,8 @@ namespace RPEFluentManager.ViewModels
 
                 List<string> absFilePaths = new List<string> { };
 
-                if (File.Exists(Path.Combine(absChartPath, "info.csv"))) absFilePaths.Add(Path.Combine(absChartPath, "info.csv"));
+                GenInfoCsv();
+                absFilePaths.Add(Path.Combine(absChartPath, "info.csv"));
                 absFilePaths.Add(ChartData.ImageSource);
                 absFilePaths.Add(Path.Combine(absChartPath, ChartData.ChartFileName));
                 absFilePaths.Add(Path.Combine(absChartPath, ChartData.MusicFileName));
