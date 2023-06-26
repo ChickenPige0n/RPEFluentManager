@@ -82,7 +82,7 @@ namespace RPEFluentManager.ViewModels
 
                 foreach (JudgeLineListItem line in chart.judgeLineList)
                 {
-                    if (line.Texture.Trim() == "line.png") continue;
+                    if (line.Texture.Trim('\0').Trim() == "line.png") continue;
 
                     absFilePaths.Add(Path.Combine(absChartPath,line.Texture));
                 }
@@ -96,8 +96,7 @@ namespace RPEFluentManager.ViewModels
                 {
                     foreach (string absFilePath in absFilePaths)
                     {
-                        absFilePath = absFilePath.Trim();
-                        archive.CreateEntryFromFile(absFilePath, Path.GetFileName(absFilePath));
+                        archive.CreateEntryFromFile(absFilePath.Trim('\0'), Path.GetFileName(absFilePath.Trim('\0')));
                     }
                 }
 
