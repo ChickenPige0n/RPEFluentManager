@@ -111,6 +111,7 @@ namespace RPEFluentManager.ViewModels
 
         public partial class ChartData : ObservableObject
         {
+            //曲绘绝对路径
             public string ImageSource { get; set; }
             public string MusicFileName { get; set; }
             public string ChartFileName { get; set; }
@@ -132,9 +133,6 @@ namespace RPEFluentManager.ViewModels
             {
                 // 查找 MainWindow 实例
                 var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
-
-                // 获取 MainWindow 的 DataContext (即 MainViewModel)
-                var viewModel = mainWindow?.ViewModel;
 
                 mainWindow?.RootNavigation.Navigate("chartedit");
                 mainWindow?.RootNavigation.PageService?.GetPage<ChartEditPage>()?.ViewModel.SetData(this);
