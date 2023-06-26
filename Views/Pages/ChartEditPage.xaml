@@ -35,7 +35,7 @@
 
             <ui:Button Icon="Merge16" Margin="10">合并多层事件</ui:Button>
 
-            <ui:Button Icon="ArrowExportLtr16" Margin="10">导出pez(附带图片)</ui:Button>
+            <ui:Button Icon="ArrowExportLtr16" Margin="10" Command="{Binding ViewModel.PackPEZCommand}">导出pez(附带图片)</ui:Button>
 
             <StackPanel Orientation="Horizontal">
                 <ui:Button Icon="TextChangeCase16" Margin="10">更改谱面标识名(路径)</ui:Button>

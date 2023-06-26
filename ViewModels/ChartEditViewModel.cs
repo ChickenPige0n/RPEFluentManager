@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using Wpf.Ui.Common.Interfaces;
 using RPEFluentManager.Models;
 using System.IO;
+using RPEFluentManager.Views.Pages;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.IO.Compression;
 
 namespace RPEFluentManager.ViewModels
 {
@@ -51,6 +55,52 @@ namespace RPEFluentManager.ViewModels
                     + ChartData.Illustrator + ", "
                     + ChartData.Charter);
                 System.Diagnostics.Process.Start("explorer.exe", $"/select,{csvPath}");
+
+            }
+        }
+
+        [RelayCommand]
+        private void PackPEZ()
+        {
+            if (ChartData != null)
+            {
+                var resPath = SettingsHandler.GetSettings().ResourcePath;
+
+                string absChartPath = Path.Combine(resPath, ChartData.ChartPath);
+
+                RPEChart? chart = JsonConvert.DeserializeObject<RPEChart>(File.ReadAllText(Path.Combine(absChartPath,ChartData.ChartFileName)));
+                if (chart == null) return;
+
+                List<string> absFilePaths = new List<string> { };
+
+                foreach(JudgeLineListItem line in chart.judgeLineList)
+                {
+                    if (line.Texture.Trim() == "line.png") continue;
+
+                    absFilePaths.Add(Path.Combine(absChartPath,line.Texture));
+                }
+                var pezPath = Path.Combine(resPath, $"{ChartData.ChartPath}.pez");
+
+
+                if (File.Exists(pezPath))
+                {
+                    File.Delete(pezPath);
+                }
+
+                using (var archive = ZipFile.Open(pezPath, ZipArchiveMode.Create))
+                {
+                    absFilePaths.Add(ChartData.ImageSource);
+                    absFilePaths.Add(Path.Combine(absChartPath, ChartData.ChartFileName));
+                    absFilePaths.Add(Path.Combine(absChartPath, ChartData.MusicFileName));
+                    absFilePaths.Add(Path.Combine(absChartPath, "info.txt"));
+
+                    foreach (string absFilePath in absFilePaths)
+                    {
+                        archive.CreateEntryFromFile(absFilePath, Path.GetFileName(absFilePath));
+                    }
+                }
+
+                System.Diagnostics.Process.Start("explorer.exe", $"/select,{pezPath}");
 
             }
         }
