@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using static RPEFluentManager.Models.Easings;
 
 //generated automatically
 
@@ -63,14 +64,62 @@ namespace RPEFluentManager.Models
             }
             return 0;
         }
-        public double getDuration()
+        public double GetDuration()
         {
-            return endTime.getTime() - startTime.getTime();
+            return endTime.GetTime() - startTime.GetTime();
         }
-        public double getVelocity()
+        public double GetVelocity()
         {
-            return (end-start)/getDuration();
+            return (end-start)/GetDuration();
         }
+
+        public List<RPEEvent> Cut(double density)
+        {
+            double duration = 1.0 / density;
+            double startTimeAsDouble = startTime;
+            double endTimeAsDouble = endTime;
+            double timeRange = endTimeAsDouble - startTimeAsDouble;
+            float valueRange = end - start;
+            double easingFuncValue;
+
+            List<RPEEvent> cuttedEvents = new List<RPEEvent>();
+
+            EasingFunc easingFunc = Easings.easeFuncs[easingType];
+
+            int maxIndex = (int)Math.Ceiling(timeRange / density) - 1;
+
+            float lastValue = start;
+
+            for (int i = 0; i <= maxIndex; i++)
+            {
+                double t0 = startTimeAsDouble + density * i;
+                double t1 = t0 + density;
+
+                // |----|----|---|
+                RPEEvent newEvent = new RPEEvent();
+
+                newEvent.startTime = (Time)t0;
+                newEvent.endTime = (Time)t1;
+
+                newEvent.start = lastValue;
+
+                double elapsed = t1 - startTimeAsDouble;
+                if (elapsed < 0) elapsed = 0;
+                else if (elapsed >= timeRange) elapsed = timeRange;
+
+                easingFuncValue = easingFunc(elapsed / timeRange);
+
+                newEvent.end = start + (float)(easingFuncValue * valueRange);
+
+                lastValue = newEvent.end;
+
+
+                cuttedEvents.Add(newEvent);
+            }
+
+            return cuttedEvents;
+        }
+
 
         public int bezier { get; set; }
         public BezierPoints bezierPoints { get; set; }
@@ -91,9 +140,37 @@ namespace RPEFluentManager.Models
 
     public class Time : List<int>
     {
-        public double getTime()
+        public double GetTime()
         {
             return this[2] == 0 ? 0 : (double)this[0] + ((double)this[1] / (double)this[2]);
+        }
+
+        public static implicit operator double(Time time)
+        {
+            return time[2] == 0 ? 0 : (double)time[0] + ((double)time[1] / (double)time[2]);
+        }
+
+        public static explicit operator Time(double value)
+        {
+
+            int wholePart = (int)value;
+            double fractionPart = value - wholePart;
+            int numerator = (int)Math.Round(fractionPart * 1000000);
+            int denominator = 1000000;
+
+            // 约分分子和分母
+            int gcd = GetGcd(numerator, denominator);
+            numerator /= gcd;
+            denominator /= gcd;
+
+            
+            return new Time() { wholePart, numerator, denominator };
+        }
+
+
+        private static int GetGcd(int a, int b)
+        {
+            return b == 0 ? a : GetGcd(b, a % b);
         }
     }
 
@@ -184,14 +261,14 @@ namespace RPEFluentManager.Models
             {
                 // 获取当前事件的start值和前一个事件到当前事件的duration
                 values[outIndex - baseIndex] = Events[outIndex].start;
-                beatTimes[outIndex - baseIndex] = Events[outIndex].getDuration();
+                beatTimes[outIndex - baseIndex] = Events[outIndex].GetDuration();
             }
 
             // 最后一个事件的end值存储到values数组的最后一个位置
             values[^1] = Events[baseIndex + eventCount - 1].end;
 
             // 计算beatTimeRange
-            beatTimeRange = Events[baseIndex + eventCount - 1].endTime.getTime() - Events[baseIndex].startTime.getTime();
+            beatTimeRange = Events[baseIndex + eventCount - 1].endTime.GetTime() - Events[baseIndex].startTime.GetTime();
         }
 
         //<summary>
