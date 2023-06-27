@@ -77,7 +77,7 @@
                         <TextBlock Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center">切割密度(事件/拍):</TextBlock>
                         <ui:TextBox Width="100" VerticalAlignment="Center" Height="Auto" Text="32"/>
                         
-                        <ui:Button Icon="Dock20" Margin="10">创建</ui:Button>
+                        <ui:Button Icon="Dock20" Margin="10" Command="{Binding ViewModel.GenParentEventCommand}">创建</ui:Button>
                     </StackPanel>
                 </StackPanel>
             </Border>
