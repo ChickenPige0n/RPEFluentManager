@@ -39,11 +39,16 @@ namespace RPEFluentManager.ViewModels
         }
 
         [RelayCommand]
-        private void GenInfoCsv()
+        private void OnGenInfo()
+        {
+            GenInfoCsv(true);
+        }
+
+        private void GenInfoCsv(bool openExplorer)
         {
             if (ChartData != null)
             {
-                string csvPath = Path.Combine(SettingsHandler.GetSettings().ResourcePath,ChartData.ChartPath,"info.csv");
+                string csvPath = Path.Combine(SettingsHandler.GetSettings().ResourcePath, ChartData.ChartPath, "info.csv");
                 string aspectRatio = true ? "1.777778" : "1.333332";
                 File.WriteAllText(csvPath, "Chart,Music,Image,AspectRatio,ScaleRatio,GlobalAlpha,Name,Level,Illustrator,Designer\n谱面, 音乐, 图片, 宽高比, 按键缩放, 背景变暗, 名称, 等级, 曲绘, 谱师\n"
                     + ChartData.ChartFileName + ", "
@@ -54,7 +59,7 @@ namespace RPEFluentManager.ViewModels
                     + ChartData.Composer + ", "
                     + ChartData.Illustrator + ", "
                     + ChartData.Charter);
-                System.Diagnostics.Process.Start("explorer.exe", $"/select,{csvPath}");
+                if (openExplorer) System.Diagnostics.Process.Start("explorer.exe", $"/select,{csvPath}");
 
             }
         }
@@ -70,7 +75,7 @@ namespace RPEFluentManager.ViewModels
 
                 List<string> absFilePaths = new List<string> { };
 
-                GenInfoCsv();
+                GenInfoCsv(false);
                 absFilePaths.Add(Path.Combine(absChartPath, "info.csv"));
                 absFilePaths.Add(ChartData.ImageSource);
                 absFilePaths.Add(Path.Combine(absChartPath, ChartData.ChartFileName));
@@ -98,6 +103,7 @@ namespace RPEFluentManager.ViewModels
                     {
                         archive.CreateEntryFromFile(absFilePath.Trim('\0'), Path.GetFileName(absFilePath.Trim('\0')));
                     }
+                    archive.Dispose();
                 }
 
                 System.Diagnostics.Process.Start("explorer.exe", $"/select,{pezPath}");

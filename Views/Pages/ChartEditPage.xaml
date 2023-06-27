@@ -28,7 +28,7 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <ui:Button Icon="Add16" Margin="10" Command="{Binding ViewModel.GenInfoCsvCommand}">生成info.csv</ui:Button>
+                <ui:Button Icon="Add16" Margin="10" Command="{Binding ViewModel.GenInfoCommand}">生成info.csv</ui:Button>
                 <TextBlock VerticalAlignment="Center">曲绘作者：</TextBlock>
                 <ui:TextBox Width="200" Text="{Binding ViewModel.ChartData.Illustrator}"/>
             </StackPanel>
