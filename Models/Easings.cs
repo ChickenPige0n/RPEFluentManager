@@ -194,6 +194,7 @@ namespace RPEFluentManager.Models
 
         public static EasingFunc[] easeFuncs = {
             new EasingFunc(EaseLinear),
+            new EasingFunc(EaseLinear),
             new EasingFunc(EaseOutSin),
             new EasingFunc(EaseInSin),
             new EasingFunc(EaseOutQuad),
