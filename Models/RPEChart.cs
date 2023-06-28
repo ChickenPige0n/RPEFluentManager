@@ -86,14 +86,14 @@ namespace RPEFluentManager.Models
 
             EasingFunc easingFunc = Easings.easeFuncs[easingType];
 
-            int maxIndex = (int)Math.Ceiling(timeRange / density) - 1;
+            int maxIndex = (int)Math.Ceiling(timeRange / duration) - 1;
 
             float lastValue = start;
 
             for (int i = 0; i <= maxIndex; i++)
             {
-                double t0 = startTimeAsDouble + density * i;
-                double t1 = t0 + density;
+                double t0 = startTimeAsDouble + duration * i;
+                double t1 = t0 + duration;
 
                 // |----|----|---|
                 RPEEvent newEvent = new RPEEvent();
