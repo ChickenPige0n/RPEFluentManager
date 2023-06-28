@@ -121,14 +121,11 @@ namespace RPEFluentManager.ViewModels
                 string absChartPath = Path.Combine(resPath, ChartData.ChartPath);
                 RPEChart? chart = JsonConvert.DeserializeObject<RPEChart>(File.ReadAllText(Path.Combine(absChartPath, ChartData.ChartFileName)));
 
-                List<RPEEvent> events = chart.judgeLineList[0].eventLayers[0].alphaEvents[0].Cut(32);
 
-                chart.judgeLineList[0].eventLayers[0].alphaEvents.RemoveAt(0);
-
-                chart.judgeLineList[0].eventLayers[0].alphaEvents.InsertRange(0, events);
+                
 
                 StreamWriter sw = new StreamWriter(Path.Combine(absChartPath, ChartData.ChartFileName), false, new UTF8Encoding(false));
-                sw.Write(JsonConvert.SerializeObject(chart));
+                sw.Write(JsonConvert.SerializeObject(chart, formatting:Formatting.Indented));
                 sw.Close();
             }
         }

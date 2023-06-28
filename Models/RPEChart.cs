@@ -95,7 +95,6 @@ namespace RPEFluentManager.Models
                 double t0 = startTimeAsDouble + duration * i;
                 double t1 = t0 + duration;
 
-                // |----|----|---|
                 RPEEvent newEvent = new RPEEvent();
 
                 newEvent.startTime = (Time)t0;
@@ -279,6 +278,42 @@ namespace RPEFluentManager.Models
             List<RPEEvent> eventsToBeReplaced = GetEventsByType(EventType);
             eventsToBeReplaced.RemoveRange(baseIndex, removeCount);
             eventsToBeReplaced.Insert(baseIndex, eventToAdd);
+        }
+
+        public void CutEventInRange(int startIndex, int endIndex, int density, string EventType)
+        {
+            List<RPEEvent> events = GetEventsByType(EventType);
+
+            List<RPEEvent> cutted = new List<RPEEvent> { };
+
+            List<RPEEvent> range = events.GetRange(startIndex, endIndex - startIndex);
+
+
+            foreach (RPEEvent e in range)
+            {
+                cutted.AddRange(e.Cut(density));
+            }
+
+            events.RemoveRange(startIndex, endIndex - startIndex);
+
+            events.InsertRange(startIndex, cutted);
+        }
+
+        public List<RPEEvent> GetEventInTimeRange(double startTime, double endTime, string EventType)
+        {
+            List<RPEEvent> events = GetEventsByType(EventType);
+
+            List<RPEEvent> eventsInTime = new List<RPEEvent> { };
+
+            foreach(RPEEvent e in events)
+            {
+                if ((e.endTime >= startTime && e.endTime >= endTime)|| (e.startTime >= startTime && e.startTime >= endTime))
+                {
+                    eventsInTime.Add(e);
+                }
+            }
+
+            return eventsInTime;
         }
     }
 
