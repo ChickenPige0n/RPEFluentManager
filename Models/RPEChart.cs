@@ -73,7 +73,9 @@ namespace RPEFluentManager.Models
             return (end-start)/GetDuration();
         }
 
-        public List<RPEEvent> Cut(double density)
+
+
+        public EventList Cut(double density)
         {
             double duration = 1.0 / density;
             double startTimeAsDouble = startTime;
@@ -82,7 +84,7 @@ namespace RPEFluentManager.Models
             float valueRange = end - start;
             double easingFuncValue;
 
-            List<RPEEvent> cuttedEvents = new List<RPEEvent>();
+            EventList cuttedEvents = new EventList();
 
             EasingFunc easingFunc = Easings.easeFuncs[easingType];
 
@@ -119,6 +121,22 @@ namespace RPEFluentManager.Models
             return cuttedEvents;
         }
 
+        public double getCurVal(double t)
+        {
+            if (t > startTime && t < endTime)
+            {
+                return (end - start) * Easings.easeFuncs[easingType]((t - startTime) / (endTime - startTime));
+            }
+            else if (Math.Abs(t - startTime)<=0.01 || Math.Abs(t - endTime)<=0.01)
+            {
+                return Math.Abs(t - startTime) <= 0.01 ? start : end;
+            }
+            else
+            {
+                return double.NaN;
+            }
+        }
+
 
         public int bezier { get; set; }
         public BezierPoints bezierPoints { get; set; }
@@ -131,6 +149,9 @@ namespace RPEFluentManager.Models
         public float start { get; set; }
         public Time startTime { get; set; }
     }
+
+
+
     //Cubic Bezier
     public class BezierPoints : List<float>
     {
@@ -183,75 +204,26 @@ namespace RPEFluentManager.Models
         public Time startTime { get; set; }
     }
 
-
-
-    public class EventLayersItem
+    public class EventList : List<RPEEvent>
     {
-        [JsonIgnore]
-        private List<RPEEvent> _alphaEvents;
-        [JsonIgnore]
-        private List<RPEEvent> _moveXEvents;
-        [JsonIgnore]
-        private List<RPEEvent> _moveYEvents;
-        [JsonIgnore]
-        private List<RPEEvent> _rotateEvents;
-        [JsonIgnore]
-        private List<SpeedEventsItem> _speedEvents;
-
-        public List<RPEEvent> alphaEvents
+        public double getValByTime(double time)
         {
-            get { return _alphaEvents; }
-            set { _alphaEvents = value; }
-        }
-
-        public List<RPEEvent> moveXEvents
-        {
-            get { return _moveXEvents; }
-            set { _moveXEvents = value; }
-        }
-
-        public List<RPEEvent> moveYEvents
-        {
-            get { return _moveYEvents; }
-            set { _moveYEvents = value; }
-        }
-
-        public List<RPEEvent> rotateEvents
-        {
-            get { return _rotateEvents; }
-            set { _rotateEvents = value; }
-        }
-
-        public List<SpeedEventsItem> speedEvents
-        {
-            get { return _speedEvents; }
-            set { _speedEvents = value; }
-        }
-
-        private ref List<RPEEvent> GetEventsByType(string type)
-        {
-            switch (type)
+            double val = 0;
+            foreach (RPEEvent Event in this)
             {
-                case "alpha":
-                    return ref _alphaEvents;
-
-                case "moveX":
-                    return ref _moveXEvents;
-
-                case "moveY":
-                    return ref _moveYEvents;
-
-                case "rotate":
-                    return ref _rotateEvents;
-
-                default:
-                    return ref _moveXEvents;
+                val = Event.getCurVal(time);
+                if (val != double.NaN)
+                {
+                    return val;
+                }
             }
+            return 0;
         }
 
-        private void GetEventInRange(string EventType, int baseIndex, int eventCount, out double[] values, out double[] beatTimes, out double beatTimeRange)
+
+        private void GetEventInRange(int baseIndex, int eventCount, out double[] values, out double[] beatTimes, out double beatTimeRange)
         {
-            List<RPEEvent> Events = GetEventsByType(EventType);
+            EventList Events = this;
 
             values = new double[eventCount + 1];
             beatTimes = new double[eventCount];
@@ -270,23 +242,20 @@ namespace RPEFluentManager.Models
             beatTimeRange = Events[baseIndex + eventCount - 1].endTime.GetTime() - Events[baseIndex].startTime.GetTime();
         }
 
-        //<summary>
-        //1:moveX 2:moveY 3:rotation 4:alpha 5:speed
-        //</summary>
         private void ReplaceEvent(RPEEvent eventToAdd, int baseIndex, int removeCount, string EventType)
         {
-            List<RPEEvent> eventsToBeReplaced = GetEventsByType(EventType);
+            EventList eventsToBeReplaced = this;
             eventsToBeReplaced.RemoveRange(baseIndex, removeCount);
             eventsToBeReplaced.Insert(baseIndex, eventToAdd);
         }
 
         public void CutEventInRange(int startIndex, int endIndex, int density, string EventType)
         {
-            List<RPEEvent> events = GetEventsByType(EventType);
+            EventList events = this;
 
-            List<RPEEvent> cutted = new List<RPEEvent> { };
+            EventList cutted = new EventList { };
 
-            List<RPEEvent> range = events.GetRange(startIndex, endIndex - startIndex);
+            EventList range = (EventList)events.GetRange(startIndex, endIndex - startIndex);
 
 
             foreach (RPEEvent e in range)
@@ -299,15 +268,15 @@ namespace RPEFluentManager.Models
             events.InsertRange(startIndex, cutted);
         }
 
-        public List<RPEEvent> GetEventInTimeRange(double startTime, double endTime, string EventType)
+        public EventList GetEventInTimeRange(double startTime, double endTime, string EventType)
         {
-            List<RPEEvent> events = GetEventsByType(EventType);
+            EventList events = this;
 
-            List<RPEEvent> eventsInTime = new List<RPEEvent> { };
+            EventList eventsInTime = new EventList { };
 
-            foreach(RPEEvent e in events)
+            foreach (RPEEvent e in events)
             {
-                if ((e.endTime >= startTime && e.endTime >= endTime)|| (e.startTime >= startTime && e.startTime >= endTime))
+                if ((e.endTime >= startTime && e.endTime >= endTime) || (e.startTime >= startTime && e.startTime >= endTime))
                 {
                     eventsInTime.Add(e);
                 }
@@ -315,6 +284,59 @@ namespace RPEFluentManager.Models
 
             return eventsInTime;
         }
+    }
+
+
+    public class EventLayersItem
+    {
+        [JsonIgnore]
+        private EventList _alphaEvents;
+        [JsonIgnore]
+        private EventList _moveXEvents;
+        [JsonIgnore]
+        private EventList _moveYEvents;
+        [JsonIgnore]
+        private EventList _rotateEvents;
+        [JsonIgnore]
+        private List<SpeedEventsItem> _speedEvents;
+
+        public EventList alphaEvents
+        {
+            get { return _alphaEvents; }
+            set { _alphaEvents = value; }
+        }
+
+        public EventList moveXEvents
+        {
+            get { return _moveXEvents; }
+            set { _moveXEvents = value; }
+        }
+
+        public EventList moveYEvents
+        {
+            get { return _moveYEvents; }
+            set { _moveYEvents = value; }
+        }
+
+        public EventList rotateEvents
+        {
+            get { return _rotateEvents; }
+            set { _rotateEvents = value; }
+        }
+
+        public List<SpeedEventsItem> speedEvents
+        {
+            get { return _speedEvents; }
+            set { _speedEvents = value; }
+        }
+
+        //<summary>
+        //1:moveX 2:moveY 3:rotation 4:alpha 5:speed
+        //</summary>
+        
+
+        
+        
     }
 
 
@@ -327,12 +349,12 @@ namespace RPEFluentManager.Models
             defaultInc.easingType = 1;
             defaultInc.startTime = new Time { 0, 0, 1 };
             defaultInc.endTime = new Time { 1, 0, 1 };
-            inclineEvents = new List<RPEEvent>
+            inclineEvents = new EventList
             {
                 defaultInc
             };
         }
-        public List<RPEEvent> inclineEvents { get; set; }
+        public EventList inclineEvents { get; set; }
     }
 
     public class NotesItem
