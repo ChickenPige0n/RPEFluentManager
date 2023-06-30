@@ -160,6 +160,30 @@ namespace RPEFluentManager.Models
 
     public class Time : List<int>
     {
+        public static Time? Parse(string t)
+        {
+            double result;
+            if (double.TryParse(t,out result))
+            {
+                return (Time)result;
+            }
+            else
+            {
+                string part1 = t.Split(':')[0];
+                string part2 = t.Split(":")[1].Split('/')[0];
+                string part3 = t.Split(":")[1].Split('/')[1];
+
+                int num1;
+                int num2;
+                int num3;
+                if (int.TryParse(part1, out num1) && int.TryParse(part2, out num2) && int.TryParse(part3, out num3))
+                {
+                    return new Time() { num1, num2, num3 };
+                }
+            }
+            return null;
+        }
+
         public double GetTime()
         {
             return this[2] == 0 ? 0 : (double)this[0] + ((double)this[1] / (double)this[2]);
@@ -192,6 +216,8 @@ namespace RPEFluentManager.Models
         {
             return b == 0 ? a : GetGcd(b, a % b);
         }
+
+
     }
 
 
@@ -242,14 +268,14 @@ namespace RPEFluentManager.Models
             beatTimeRange = Events[baseIndex + eventCount - 1].endTime.GetTime() - Events[baseIndex].startTime.GetTime();
         }
 
-        private void ReplaceEvent(RPEEvent eventToAdd, int baseIndex, int removeCount, string EventType)
+        private void ReplaceEvent(RPEEvent eventToAdd, int baseIndex, int removeCount)
         {
             EventList eventsToBeReplaced = this;
             eventsToBeReplaced.RemoveRange(baseIndex, removeCount);
             eventsToBeReplaced.Insert(baseIndex, eventToAdd);
         }
 
-        public void CutEventInRange(int startIndex, int endIndex, int density, string EventType)
+        public void CutEventInRange(int startIndex, int endIndex, int density)
         {
             EventList events = this;
 
@@ -268,7 +294,7 @@ namespace RPEFluentManager.Models
             events.InsertRange(startIndex, cutted);
         }
 
-        public EventList GetEventInTimeRange(double startTime, double endTime, string EventType)
+        public EventList GetEventInTimeRange(double startTime, double endTime)
         {
             EventList events = this;
 
@@ -281,8 +307,13 @@ namespace RPEFluentManager.Models
                     eventsInTime.Add(e);
                 }
             }
-
             return eventsInTime;
+        }
+
+        public (int,int) GetEventIndexRangeByTime(double startTime, double endTime)
+        {
+            EventList list = GetEventInTimeRange(startTime, endTime);
+            return (IndexOf(list[0]), IndexOf(list[^1]));
         }
     }
 
