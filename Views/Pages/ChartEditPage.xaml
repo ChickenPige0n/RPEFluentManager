@@ -9,7 +9,7 @@
     d:DataContext="{d:DesignInstance local:ChartEditPage, IsDesignTimeCreatable=False}"
     d:Background="{DynamicResource ApplicationBackgroundBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    d:DesignHeight="450" d:DesignWidth="800"
+    d:DesignHeight="541" d:DesignWidth="814"
     Title="ChartEditPage">
 
     <Grid>
@@ -52,31 +52,23 @@
 
             <TextBlock Margin="10">短时父子线编辑</TextBlock>
             <Border BorderBrush="Wheat" BorderThickness="1" CornerRadius="10" Width="400" Height="130" HorizontalAlignment="Left">
-                
+
                 <StackPanel Orientation="Horizontal" Margin="10">
-                    
-                    
                     <StackPanel Margin="5" DockPanel.Dock="Left" Orientation="Vertical">
                         <TextBlock Margin="2" VerticalAlignment="Center">开始时间:</TextBlock>
-                        <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto"/>
-
+                        <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto" Text="{Binding ViewModel.ParentStartTime}"/>
                         <TextBlock Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center">父线:</TextBlock>
-                        <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto"/>
-
+                        <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto" Text="{Binding ViewModel.Parent}"/>
                     </StackPanel>
-
                     <StackPanel Margin="5" DockPanel.Dock="Bottom" Orientation="Vertical">
                         <TextBlock Margin="2" VerticalAlignment="Center">结束时间:</TextBlock>
-                        <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto"/>
-
+                        <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto" Text="{Binding ViewModel.ParentEndTime}"/>
                         <TextBlock Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center">子线:</TextBlock>
-                        <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto"/>
+                        <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto" Text="{Binding ViewModel.Child}"/>
                     </StackPanel>
-
                     <StackPanel Margin="5" DockPanel.Dock="Bottom" Orientation="Vertical">
                         <TextBlock Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center">切割密度(事件/拍):</TextBlock>
-                        <ui:TextBox Width="100" VerticalAlignment="Center" Height="Auto" Text="32"/>
-                        
+                        <ui:TextBox Width="100" VerticalAlignment="Center" Height="Auto" Text="{Binding ViewModel.Density}"/>
                         <ui:Button Icon="Dock20" Margin="10" Command="{Binding ViewModel.GenParentEventCommand}">创建</ui:Button>
                     </StackPanel>
                 </StackPanel>

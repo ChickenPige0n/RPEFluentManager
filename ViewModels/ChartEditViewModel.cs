@@ -21,6 +21,21 @@ namespace RPEFluentManager.ViewModels
         [ObservableProperty]
         private DashboardViewModel.ChartData _chartData;
 
+        [ObservableProperty]
+        private string _density;
+
+        [ObservableProperty]
+        private string _parent;
+
+        [ObservableProperty]
+        private string _child;
+
+        [ObservableProperty]
+        private string _parentStartTime;
+        
+        [ObservableProperty]
+        private string _parentEndTime;
+
         public void OnNavigatedTo()
         {
         }
@@ -121,8 +136,19 @@ namespace RPEFluentManager.ViewModels
                 string absChartPath = Path.Combine(resPath, ChartData.ChartPath);
                 RPEChart? chart = JsonConvert.DeserializeObject<RPEChart>(File.ReadAllText(Path.Combine(absChartPath, ChartData.ChartFileName)));
 
+                EventLayersItem child = chart.judgeLineList[int.Parse(Child)].eventLayers[0];
 
-                
+                Time? startTime = Time.Parse(ParentStartTime);
+                Time? endTime = Time.Parse(ParentEndTime);
+                if(startTime==null||endTime==null)
+                {
+                    DashboardViewModel.makeMessageBox("错误", "读取时间失败");
+                    chart = null;
+                    return;
+                }
+                (int a,int b) = child.moveXEvents.GetEventIndexRangeByTime(startTime, endTime);
+                child.moveXEvents.CutEventInRange(a, b, int.Parse(Density));
+
 
                 StreamWriter sw = new StreamWriter(Path.Combine(absChartPath, ChartData.ChartFileName), false, new UTF8Encoding(false));
                 sw.Write(JsonConvert.SerializeObject(chart, formatting:Formatting.Indented));
