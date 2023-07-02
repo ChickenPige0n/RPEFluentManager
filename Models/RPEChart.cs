@@ -121,7 +121,7 @@ namespace RPEFluentManager.Models
             return cuttedEvents;
         }
 
-        public double getCurVal(double t)
+        public double GetCurVal(double t)
         {
             if (t > startTime && t < endTime)
             {
@@ -232,18 +232,17 @@ namespace RPEFluentManager.Models
 
     public class EventList : List<RPEEvent>
     {
-        public double getValByTime(double time)
+        public double GetValByTime(double time)
         {
-            double val = 0;
-            foreach (RPEEvent Event in this)
+            foreach (RPEEvent e in this)
             {
-                val = Event.getCurVal(time);
-                if (val != double.NaN)
+                if (time >= e.startTime && time <= e.endTime)
                 {
-                    return val;
+                    return e.GetCurVal(time);
                 }
             }
-            return 0;
+
+            return double.NaN; // 如果列表为空，则返回默认值
         }
 
 
@@ -281,15 +280,14 @@ namespace RPEFluentManager.Models
 
             EventList cutted = new EventList { };
 
-            EventList range = (EventList)events.GetRange(startIndex, endIndex - startIndex);
-
-
+            var range = events.GetRange(startIndex, endIndex - startIndex +1);
+            
             foreach (RPEEvent e in range)
             {
                 cutted.AddRange(e.Cut(density));
             }
 
-            events.RemoveRange(startIndex, endIndex - startIndex);
+            events.RemoveRange(startIndex, endIndex - startIndex + 1);
 
             events.InsertRange(startIndex, cutted);
         }
@@ -302,7 +300,7 @@ namespace RPEFluentManager.Models
 
             foreach (RPEEvent e in events)
             {
-                if ((e.endTime >= startTime && e.endTime >= endTime) || (e.startTime >= startTime && e.startTime >= endTime))
+                if ((e.endTime >= startTime && e.endTime <= endTime) || (e.startTime >= startTime && e.startTime <= endTime))
                 {
                     eventsInTime.Add(e);
                 }
