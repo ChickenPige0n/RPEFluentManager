@@ -136,20 +136,66 @@ namespace RPEFluentManager.ViewModels
                 string absChartPath = Path.Combine(resPath, ChartData.ChartPath);
                 RPEChart? chart = JsonConvert.DeserializeObject<RPEChart>(File.ReadAllText(Path.Combine(absChartPath, ChartData.ChartFileName)));
 
-                EventLayersItem child = chart.judgeLineList[int.Parse(Child)].eventLayers[0];
+                if (chart == null)
+                {
+                    DashboardViewModel.makeMessageBox("错误", "读取谱面失败");
+                    return;
+                }
+
+
+                int childIdx;
+                int parentIdx;
+                int density;
+                if (!int.TryParse(Child, out childIdx) || !int.TryParse(Parent, out parentIdx) || !int.TryParse(Density,out density))
+                {
+                    DashboardViewModel.makeMessageBox("错误", "读取父子线号失败");
+                    return;
+                }
+
+                EventLayersItem child = chart.judgeLineList[childIdx].eventLayers[0];
+                EventLayersItem parent = chart.judgeLineList[parentIdx].eventLayers[0];
 
                 Time? startTime = Time.Parse(ParentStartTime);
                 Time? endTime = Time.Parse(ParentEndTime);
-                if(startTime==null||endTime==null)
+                if( startTime == null||endTime == null )
                 {
                     DashboardViewModel.makeMessageBox("错误", "读取时间失败");
-                    chart = null;
                     return;
                 }
+
                 (int a,int b) = child.moveXEvents.GetEventIndexRangeByTime(startTime, endTime);
                 child.moveXEvents.CutEventInRange(a, b, int.Parse(Density));
+                (int c, b) = child.moveYEvents.GetEventIndexRangeByTime(startTime, endTime);
+                child.moveYEvents.CutEventInRange(c, b, int.Parse(Density));
+                int Count = (int)((endTime - startTime) * density);
 
 
+                double curTime;
+                double curParentX;
+                double curParentY;
+                double curParentR;
+                double curChildX;
+                double curChildY;
+
+                int idx = 0;
+                for ( ; idx < Count; idx++)
+                {
+                    curTime = (double)startTime + ((double)idx / (double)density);
+                    curParentX = parent.moveXEvents.GetValByTime(curTime);
+                    curParentY = parent.moveYEvents.GetValByTime(curTime);
+                    curParentR = -parent.rotateEvents.GetValByTime(curTime);
+                    curParentR = (curParentR % 360) * Math.PI / 180.0;
+
+                    curChildX = child.moveXEvents[a + idx].start;
+                    curChildY = child.moveYEvents[c + idx].start;
+
+                    child.moveXEvents[a + idx].start = (float)((curChildX * Math.Cos(curParentR)) - (curChildY * Math.Sin(curParentR))) + (float)curParentX;
+                    child.moveYEvents[c + idx].start = (float)((curChildX * Math.Sin(curParentR)) + (curChildY * Math.Cos(curParentR))) + (float)curParentY;
+
+                    if (idx != 0) child.moveXEvents[a + idx - 1].end = child.moveXEvents[a + idx].start;
+                    if (idx != 0) child.moveYEvents[c + idx - 1].end = child.moveYEvents[c + idx].start;
+                }
+                
                 StreamWriter sw = new StreamWriter(Path.Combine(absChartPath, ChartData.ChartFileName), false, new UTF8Encoding(false));
                 sw.Write(JsonConvert.SerializeObject(chart, formatting:Formatting.Indented));
                 sw.Close();
