@@ -25,6 +25,17 @@
                     <TextBlock Text="{Binding ViewModel.ChartData.ChartDiff}" DockPanel.Dock="Top" Margin="3" FontSize="15"/>
                     <TextBlock Text="{Binding ViewModel.ChartData.ChartPath}" DockPanel.Dock="Bottom" Margin="3" FontSize="10"/>
                 </DockPanel>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="5">快速谱面预览服务器</TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Margin="5" Command="{Binding ViewModel.StartServerCommand}">开启</Button>
+                        <Button Margin="5" Command="{Binding ViewModel.StopServerCommand}">关闭</Button>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="5" VerticalAlignment="Center">端口号:</TextBlock>
+                        <TextBox Margin="2" Width="70" Text="{Binding ViewModel.FileServerPort}"></TextBox>
+                    </StackPanel>
+                </StackPanel>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
@@ -53,20 +64,20 @@
             <TextBlock Margin="10">短时父子线编辑</TextBlock>
             <Border BorderBrush="Wheat" BorderThickness="1" CornerRadius="10" Width="400" Height="130" HorizontalAlignment="Left">
 
-                <StackPanel Orientation="Horizontal" Margin="10">
-                    <StackPanel Margin="5" DockPanel.Dock="Left" Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <StackPanel Margin="2" DockPanel.Dock="Left" Orientation="Vertical">
                         <TextBlock Margin="2" VerticalAlignment="Center">开始时间:</TextBlock>
                         <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto" Text="{Binding ViewModel.ParentStartTime}"/>
                         <TextBlock Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center">父线:</TextBlock>
                         <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto" Text="{Binding ViewModel.Parent}"/>
                     </StackPanel>
-                    <StackPanel Margin="5" DockPanel.Dock="Bottom" Orientation="Vertical">
+                    <StackPanel Margin="2" DockPanel.Dock="Bottom" Orientation="Vertical">
                         <TextBlock Margin="2" VerticalAlignment="Center">结束时间:</TextBlock>
                         <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto" Text="{Binding ViewModel.ParentEndTime}"/>
                         <TextBlock Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center">子线:</TextBlock>
                         <ui:TextBox Width="120" VerticalAlignment="Center" Height="Auto" Text="{Binding ViewModel.Child}"/>
                     </StackPanel>
-                    <StackPanel Margin="5" DockPanel.Dock="Bottom" Orientation="Vertical">
+                    <StackPanel Margin="2" DockPanel.Dock="Bottom" Orientation="Vertical">
                         <TextBlock Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center">切割密度(事件/拍):</TextBlock>
                         <ui:TextBox Width="100" VerticalAlignment="Center" Height="Auto" Text="{Binding ViewModel.Density}"/>
                         <ui:Button Icon="Dock20" Margin="10" Command="{Binding ViewModel.GenParentEventCommand}">创建</ui:Button>

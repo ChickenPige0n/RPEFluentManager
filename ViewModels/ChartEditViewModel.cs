@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
 using System.Text.Unicode;
+using System.Net;
+using System.Net.Sockets;
 
 namespace RPEFluentManager.ViewModels
 {
@@ -36,6 +38,10 @@ namespace RPEFluentManager.ViewModels
         [ObservableProperty]
         private string _parentEndTime;
 
+        [ObservableProperty]
+        private string _fileServerPort;
+
+
         public void OnNavigatedTo()
         {
         }
@@ -57,10 +63,10 @@ namespace RPEFluentManager.ViewModels
         [RelayCommand]
         private void OnGenInfo()
         {
-            GenInfoCsv(true);
+            GenInfoCsv(true, ChartData);
         }
 
-        private void GenInfoCsv(bool openExplorer)
+        private static void GenInfoCsv(bool openExplorer, DashboardViewModel.ChartData ChartData)
         {
             if (ChartData != null)
             {
@@ -81,7 +87,13 @@ namespace RPEFluentManager.ViewModels
         }
 
         [RelayCommand]
-        private void PackPEZ()
+        public void PackPEZ()
+        {
+            PackPEZ(true, ChartData);
+        }
+
+
+        public static void PackPEZ(bool openExplorer, DashboardViewModel.ChartData ChartData)
         {
             if (ChartData != null)
             {
@@ -91,7 +103,7 @@ namespace RPEFluentManager.ViewModels
 
                 List<string> absFilePaths = new List<string> { };
 
-                GenInfoCsv(false);
+                GenInfoCsv(false, ChartData);
                 absFilePaths.Add(Path.Combine(absChartPath, "info.csv"));
                 absFilePaths.Add(ChartData.ImageSource);
                 absFilePaths.Add(Path.Combine(absChartPath, ChartData.ChartFileName));
@@ -105,7 +117,7 @@ namespace RPEFluentManager.ViewModels
                 {
                     if (line.Texture.Trim('\0').Trim() == "line.png") continue;
 
-                    absFilePaths.Add(Path.Combine(absChartPath,line.Texture));
+                    absFilePaths.Add(Path.Combine(absChartPath, line.Texture));
                 }
 
                 var pezPath = Path.Combine(resPath, $"{ChartData.ChartPath}.pez");
@@ -121,11 +133,10 @@ namespace RPEFluentManager.ViewModels
                     }
                     archive.Dispose();
                 }
-
-                System.Diagnostics.Process.Start("explorer.exe", $"/select,{pezPath}");
-
+                if (openExplorer) System.Diagnostics.Process.Start("explorer.exe", $"/select,{pezPath}");
             }
         }
+
 
         [RelayCommand]
         private void GenParentEvent()
@@ -200,6 +211,30 @@ namespace RPEFluentManager.ViewModels
                 sw.Write(JsonConvert.SerializeObject(chart, formatting:Formatting.Indented));
                 sw.Close();
             }
+        }
+
+
+
+
+        public ChartFileServer? server;
+
+        [RelayCommand]
+        private void StartServer()
+        {
+            server = new ChartFileServer(ChartData, int.Parse(FileServerPort));
+            server.Start();
+            DashboardViewModel.makeMessageBox("提示", "服务器已经开启");
+        }
+        [RelayCommand]
+        private void StopServer()
+        {
+            if (server != null)
+            {
+                server.Stop();
+                server = null;
+            }
+
+            DashboardViewModel.makeMessageBox("提示", "服务器已经关闭");
         }
     }   
 }
