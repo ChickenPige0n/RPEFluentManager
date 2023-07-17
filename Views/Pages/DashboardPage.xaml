@@ -48,7 +48,7 @@
                             </StackPanel>
 
                             <StackPanel DockPanel.Dock="Right" Orientation="Vertical" VerticalAlignment="Center" Width="100">
-                                <ui:Button Icon="Delete12" Margin="10" >删除</ui:Button>
+                                <ui:Button Icon="Delete12" Margin="10" Command="{Binding DelChartCommand}">删除</ui:Button>
                                 <ui:Button Icon="Edit16" Margin="10" Command="{Binding EditChartCommand}" >编辑</ui:Button>
                             </StackPanel>
 

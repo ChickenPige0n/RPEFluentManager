@@ -17,6 +17,12 @@ using RPEFluentManager.Views.Pages;
 using Microsoft.Win32;
 using System.Text;
 using System.Reflection.Metadata;
+using System.Dynamic;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Threading;
 
 namespace RPEFluentManager.ViewModels
 {
@@ -127,6 +133,92 @@ namespace RPEFluentManager.ViewModels
 
             [ObservableProperty]
             public bool _isSelected;
+
+            [RelayCommand]
+            public void DelChart()
+            {
+                Wpf.Ui.Controls.MessageBox msgbx = new Wpf.Ui.Controls.MessageBox();
+                msgbx.Foreground = Brushes.Black;
+                msgbx.Width = 250;
+                msgbx.Height = 146;
+
+                msgbx.ButtonLeftClick += (sender, e) =>
+                {
+
+
+                    var ResourcePath = SettingsHandler.GetSettings().ResourcePath;
+
+                    var ChartListPath = Path.Combine(Path.GetDirectoryName(ResourcePath),"ChartList.txt");
+                    try
+                    {
+                        Directory.Delete(Path.Combine(ResourcePath, ChartPath), true);
+                    }
+                    catch { }
+
+                    string content = File.ReadAllText(ChartListPath);
+
+                    List<string> splitted = content.Split(new char[] {'#'}).ToList();
+
+                    for (int i = splitted.Count - 1; i >= 0; i--)
+                    {
+                        var infoContent = splitted[i];
+
+                        string[] lines = infoContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                        foreach (string line in lines)
+                        {
+                            string[] infos = line.Split(new[] { ':' });
+                            switch (infos[0].Trim())
+                            {
+                                case "Path":
+                                    if (infos[1].Trim().Equals(ChartPath))
+                                    {
+                                        splitted.RemoveAt(i);
+                                    }
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                        }
+
+                    }
+
+
+                    StreamWriter sw = new StreamWriter(ChartListPath, false, new UTF8Encoding(false));
+                    foreach (string infoContent in splitted)
+                    {
+                        sw.WriteLine("#");
+                        sw.Write(infoContent);
+                    }
+                    sw.Close();
+
+
+                    // 查找 MainWindow 实例
+                    var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+
+                    mainWindow?.RootNavigation.PageService?.GetPage<DashboardPage>()?.ViewModel.RemoveChartInfoByPath(ChartPath);
+
+
+
+
+                    msgbx.Close();
+
+                    makeMessageBox("喜报", $"删除了名为{ChartName}的谱面!");
+
+                };
+                msgbx.ButtonLeftName = "确定";
+
+                msgbx.ButtonRightClick += (sender, e) =>
+                {
+                    msgbx.Close();
+                };
+                msgbx.ButtonRightName = "取消";
+
+                msgbx.Foreground = Brushes.White;
+                msgbx.Show("警告", "确定要删除这个谱面吗？");
+
+            }
 
             [RelayCommand]
             public void EditChart(string p)
@@ -290,10 +382,42 @@ namespace RPEFluentManager.ViewModels
                     cd.IsSelected = selectionFlag;
                 }
                 selectionFlag = !selectionFlag;
+
+
+
+                string[] folderPaths = Directory.GetDirectories(ResourcePath, "*", SearchOption.AllDirectories);
+
+                foreach (string folderPath in folderPaths)
+                {
+                    string[] files = Directory.GetFiles(folderPath);
+                    int fileCount = files.Length;
+
+                    if(fileCount <= 0)
+                    {
+                        return;
+                    }
+
+                    var ext = Path.GetExtension(files[0]).ToLower();
+                    string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+
+                    if (fileCount == 1 && imageExtensions.Contains(ext))
+                    {
+                        Directory.Delete(folderPath, true);
+                    }
+                }
             }
         }
 
-        
-
+        public void RemoveChartInfoByPath(string path)
+        {
+            for (int i = ChartList.Count - 1; i >= 0; i--)
+            {
+                ChartData cd = ChartList[i];
+                if (cd.ChartPath.Equals(path)){
+                    cd.ImageSource = "";
+                    ChartList.RemoveAt(i);
+                }
+            }
+        }
     }
 }

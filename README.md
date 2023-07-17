@@ -9,6 +9,7 @@
 - 修复ChartList.txt(将RPE内删除的谱面还原或修复误删的ChartList.txt)
 - 导出pez并自动打包图片
 - 快速谱面预览服务器(直接通过局域网导入模拟器游玩)
+- 彻底删除谱面(包括文件夹和ChartList.txt)
 - 一堆bug
 
 ## 将要制作的功能(饼):
